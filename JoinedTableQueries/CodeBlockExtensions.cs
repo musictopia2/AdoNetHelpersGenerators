@@ -3,7 +3,7 @@ internal static class CodeBlockExtensions
 {
     public static ICodeBlock PopulateQuery(this ICodeBlock w, ResultsModel result, JoinedGenericModel generic)
     {
-        w.WriteLine($"static global::CommonBasicLibraries.CollectionClasses.BasicList<{result.FullName}> global::AdoNetHelpersLibrary.ConnectionHelpers.ICommandQuery{generic.FullInterfaceName}.Query(global::System.Data.IDbCommand command, {generic.FullFunctionName} action, global::CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
+        w.WriteLine($"static global::CommonBasicLibraries.CollectionClasses.BasicList<{result.FullName}> global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandQuery{generic.FullInterfaceName}.Query(global::System.Data.IDbCommand command, {generic.FullFunctionName} action, global::CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
             .WriteCodeBlock(w =>
             {
                 w.FinishQuery(result, false);
@@ -12,7 +12,7 @@ internal static class CodeBlockExtensions
     }
     public static ICodeBlock PopulateQueryAsync(this ICodeBlock w, ResultsModel result, JoinedGenericModel generic)
     {
-        w.WriteLine($"static async Task<global::CommonBasicLibraries.CollectionClasses.BasicList<{result.FullName}>> global::AdoNetHelpersLibrary.ConnectionHelpers.ICommandQuery{generic.FullInterfaceName}.QueryAsync(global::System.Data.IDbCommand command, {generic.FullFunctionName} action, global::CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
+        w.WriteLine($"static async Task<global::CommonBasicLibraries.CollectionClasses.BasicList<{result.FullName}>> global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandQuery{generic.FullInterfaceName}.QueryAsync(global::System.Data.IDbCommand command, {generic.FullFunctionName} action, global::CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
             .WriteCodeBlock(w =>
             {
                 w.FinishQuery(result, true);

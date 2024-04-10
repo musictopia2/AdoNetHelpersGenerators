@@ -18,7 +18,7 @@ internal class EmitClass(ImmutableArray<ResultsModel> results, SourceProductionC
             StrCat cats = new();
             foreach (var g in item.Joins)
             {
-                cats.AddToString($"global::AdoNetHelpersLibrary.ConnectionHelpers.ICommandQuery{g.FullInterfaceName}", ", ");
+                cats.AddToString($"global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandQuery{g.FullInterfaceName}", ", ");
             }
             string information = cats.GetInfo();
             w.Write(information);

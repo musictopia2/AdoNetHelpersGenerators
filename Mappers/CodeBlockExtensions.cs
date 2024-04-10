@@ -20,7 +20,7 @@ internal static class CodeBlockExtensions
         })
         .WriteLine(w =>
         {
-            w.Write("static AdoNetHelpersLibrary.MapHelpers.SourceGeneratedMap ")
+            w.Write("static CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.SourceGeneratedMap ")
             .PopulateITableMapperStart(result.ClassName)
             .Write(".GetTableMap(bool beingJoined)");
         })
@@ -30,7 +30,7 @@ internal static class CodeBlockExtensions
         })
         .WriteLine(w =>
         {
-            w.Write("static AdoNetHelpersLibrary.MapHelpers.SourceGeneratedMap ")
+            w.Write("static CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.SourceGeneratedMap ")
             .PopulateITableMapperStart(result.ClassName)
             .Write(".GetTableMap(")
             .Write(result.ClassName)
@@ -104,16 +104,16 @@ internal static class CodeBlockExtensions
     }
     public static ICodeBlock PopulatePrivateMaps(this ICodeBlock w, ResultsModel result)
     {
-        w.WriteLine($"private static AdoNetHelpersLibrary.MapHelpers.SourceGeneratedMap PrivateGetMap({result.ClassName}? payLoad, bool isAutoIncremented, bool beingJoined)")
+        w.WriteLine($"private static CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.SourceGeneratedMap PrivateGetMap({result.ClassName}? payLoad, bool isAutoIncremented, bool beingJoined)")
             .WriteCodeBlock(w =>
             {
-                w.WriteLine("AdoNetHelpersLibrary.MapHelpers.SourceGeneratedMap output = new();")
+                w.WriteLine("CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.SourceGeneratedMap output = new();")
                 .WriteLine($"""
                     output.TableName = "{result.TableName}";
                     """)
-                .WriteLine("global::CommonBasicLibraries.CollectionClasses.BasicList<AdoNetHelpersLibrary.MapHelpers.ColumnModel> columns = [];")
+                .WriteLine("global::CommonBasicLibraries.CollectionClasses.BasicList<CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ColumnModel> columns = [];")
                 .WriteLine("output.Columns = columns;")
-                .WriteLine("AdoNetHelpersLibrary.MapHelpers.ColumnModel column;");
+                .WriteLine("CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ColumnModel column;");
                 var idField = result.Properties.Single(x => x.IsIDField);
                 w.WriteLine("if (isAutoIncremented == false)")
                 .WriteCodeBlock(w =>

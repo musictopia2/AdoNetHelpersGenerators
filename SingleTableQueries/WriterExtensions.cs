@@ -11,7 +11,7 @@ internal static class WriterExtensions
     }
     public static IWriter PopulateInterface(this IWriter w, ResultsModel result)
     {
-        w.Write(": global::AdoNetHelpersLibrary.ConnectionHelpers.ICommandQuery<")
+        w.Write(": global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandQuery<")
             .Write(result.ClassName)
             .Write(">");
         return w;

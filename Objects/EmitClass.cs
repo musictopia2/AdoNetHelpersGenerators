@@ -18,7 +18,7 @@ internal class EmitClass(ImmutableArray<ResultsModel> results, SourceProductionC
             StrCat cats = new();
             foreach (var item in item.Properties)
             {
-                cats.AddToString($"global::AdoNetHelpersLibrary.ConnectionHelpers.ICommandExecuteScalar{item.GenericObjectName}", ",");
+                cats.AddToString($"global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandExecuteScalar{item.GenericObjectName}", ",");
             }
             string information = cats.GetInfo();
             w.Write(information);
@@ -37,7 +37,7 @@ internal class EmitClass(ImmutableArray<ResultsModel> results, SourceProductionC
             StrCat cats = new();
             foreach (var item in item.Properties)
             {
-                cats.AddToString($"global::AdoNetHelpersLibrary.ConnectionHelpers.ICommandQuery{item.GenericObjectName}", ",");
+                cats.AddToString($"global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandQuery{item.GenericObjectName}", ",");
             }
             string information = cats.GetInfo();
             w.Write(information);

@@ -7,7 +7,7 @@ internal static class CodeBlockExtensions
         {
             w.Write("static ")
             .PopulateListOfModel(result)
-            .Write(" global::AdoNetHelpersLibrary.ConnectionHelpers.ICommandQuery<")
+            .Write(" global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandQuery<")
             .Write(result.ClassName)
             .Write(">.Query(global::System.Data.IDbCommand command, CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)");
         })
@@ -29,7 +29,7 @@ internal static class CodeBlockExtensions
         {
             w.Write("static async Task<")
             .PopulateListOfModel(result)
-            .Write("> global::AdoNetHelpersLibrary.ConnectionHelpers.ICommandQuery<")
+            .Write("> global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandQuery<")
             .Write(result.ClassName)
             .Write(">.QueryAsync(global::System.Data.IDbCommand command, CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)");
         })

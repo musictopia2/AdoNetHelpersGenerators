@@ -3,7 +3,7 @@ internal static class CodeBlockExtensions
 {
     public static ICodeBlock PopulateScalarDetails(this ICodeBlock w, PropertyModel p)
     {
-        w.WriteLine($"static {p.ReturnType} ICommandExecuteScalar{p.GenericObjectName}.ExecuteScalar(System.Data.IDbCommand command)")
+        w.WriteLine($"static {p.ReturnType} global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandExecuteScalar{p.GenericObjectName}.ExecuteScalar(System.Data.IDbCommand command)")
             .WriteCodeBlock(w =>
             {
                 if (p.VariableCustomCategory == EnumSimpleTypeCategory.CustomEnum)
@@ -16,7 +16,7 @@ internal static class CodeBlockExtensions
                 }
                 else
                 {
-                    w.WriteLine($"return global::AdoNetHelpersLibrary.ExecutionHelpers.CommandScalarExtensions.{p.ScalarInfo}(command);");
+                    w.WriteLine($"return global::CommonBasicLibraries.DatabaseHelpers.Extensions.CommandScalarExtensions.{p.ScalarInfo}(command);");
                 }
             });
 
@@ -39,12 +39,12 @@ internal static class CodeBlockExtensions
         {
             ends = ", category";
         }
-        w.WriteLine($"return {starts} global::AdoNetHelpersLibrary.ExecutionHelpers.CommandReaderExtensions.{p.QueryMethod}{extras}(command{ends});");
+        w.WriteLine($"return {starts} global::CommonBasicLibraries.DatabaseHelpers.Extensions.CommandReaderExtensions.{p.QueryMethod}{extras}(command{ends});");
         return w;
     }
     public static ICodeBlock PopulateQueryDetails(this ICodeBlock w, PropertyModel p)
     {
-        w.WriteLine($"static global::CommonBasicLibraries.CollectionClasses.BasicList<{p.ReturnType}> ICommandQuery{p.GenericObjectName}.Query(System.Data.IDbCommand command, CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
+        w.WriteLine($"static global::CommonBasicLibraries.CollectionClasses.BasicList<{p.ReturnType}> global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandQuery{p.GenericObjectName}.Query(System.Data.IDbCommand command, CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
             .WriteCodeBlock(w =>
             {
                 if (p.VariableCustomCategory == EnumSimpleTypeCategory.CustomEnum || p.VariableCustomCategory == EnumSimpleTypeCategory.StandardEnum)
@@ -56,7 +56,7 @@ internal static class CodeBlockExtensions
                     w.PopulateStandardQueryFunctions(p, false);
                 }
             });
-        w.WriteLine($"static async Task<global::CommonBasicLibraries.CollectionClasses.BasicList<{p.ReturnType}>> ICommandQuery{p.GenericObjectName}.QueryAsync(System.Data.IDbCommand command, CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
+        w.WriteLine($"static async Task<global::CommonBasicLibraries.CollectionClasses.BasicList<{p.ReturnType}>> global::CommonBasicLibraries.DatabaseHelpers.SourceGeneratorHelpers.ICommandQuery{p.GenericObjectName}.QueryAsync(System.Data.IDbCommand command, CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
             .WriteCodeBlock(w =>
             {
                 if (p.VariableCustomCategory == EnumSimpleTypeCategory.CustomEnum || p.VariableCustomCategory == EnumSimpleTypeCategory.StandardEnum)
