@@ -28,7 +28,7 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
         var firsts = classSymbol.GetAllPublicProperties();
         foreach (var item in firsts)
         {
-            if (item.HasAttribute("NotMapped") == false)
+            if (item.HasAttribute("NotMapped") == false &&  item.IsReadOnly == false)
             {
                 PropertyModel property = GetProperty(item, result);
                 if (property.VariableCustomCategory != EnumSimpleTypeCategory.None)

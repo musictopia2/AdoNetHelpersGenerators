@@ -39,6 +39,10 @@ public class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation c
         var firsts = classSymbol.GetAllPublicProperties();
         foreach (var item in firsts)
         {
+            if (item.IsReadOnly)
+            {
+                continue;
+            }
             if (item.HasAttribute("NotMapped"))
             {
                 continue;

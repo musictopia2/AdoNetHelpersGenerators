@@ -31,7 +31,7 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
             if (item.HasAttribute("NotMapped") == false)
             {
                 PropertyModel property = GetProperty(item);
-                if (property.VariableCustomCategory !=  EnumSimpleTypeCategory.None)
+                if (property.VariableCustomCategory !=  EnumSimpleTypeCategory.None && item.IsReadOnly == false)
                 {
                     output.Add(property);
                 }
