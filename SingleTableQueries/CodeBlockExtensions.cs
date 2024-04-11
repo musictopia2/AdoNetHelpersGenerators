@@ -155,7 +155,7 @@ internal static class CodeBlockExtensions
         })
         .WriteCodeBlock(w =>
         {
-            if (property.Nullable || property.VariableCustomCategory == EnumSimpleTypeCategory.CustomEnum)
+            if (property.Nullable || property.VariableCustomCategory == EnumSimpleTypeCategory.CustomEnum || property.VariableCustomCategory == EnumSimpleTypeCategory.String)
             {
                 w.WriteLine(w =>
                 {

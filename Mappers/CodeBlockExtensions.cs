@@ -201,7 +201,14 @@ internal static class CodeBlockExtensions
     {
         if (property.VariableCustomCategory == EnumSimpleTypeCategory.StandardEnum)
         {
-            w.WriteLine($"column.Value = (int)payLoad.{property.PropertyName};");
+            if (property.Nullable)
+            {
+                w.WriteLine($"column.Value = (int?)payLoad.{property.PropertyName};");
+            }
+            else
+            {
+                w.WriteLine($"column.Value = (int)payLoad.{property.PropertyName};");
+            }
         }
         else if (property.VariableCustomCategory == EnumSimpleTypeCategory.CustomEnum)
         {
