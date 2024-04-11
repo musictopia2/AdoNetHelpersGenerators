@@ -109,23 +109,23 @@ internal static class CodeBlockExtensions
         {
             if (property.PropertyName == "ID" || property.ColumnName == "ID")
             {
-                w.WriteLine(w =>
-                {
-                    w.Write("if (item.ColumnName == ")
-                    .AppendDoubleQuote("Id")
-                    .Write(")");
-                })
-                .WriteCodeBlock(w =>
-                {
-                    w.WriteLine(w =>
-                    {
-                        w.Write("output.")
-                        .Write(property.PropertyName)
-                        .Write("= global::System.Data.DataReaderExtensions.GetInt32(reader, ")
-                        .AppendDoubleQuote("Id")
-                        .Write(");");
-                    });
-                });
+                //w.WriteLine(w =>
+                //{
+                //    w.Write("if (item.ColumnName == ")
+                //    .AppendDoubleQuote("Id")
+                //    .Write(")");
+                //})
+                //.WriteCodeBlock(w =>
+                //{
+                //    w.WriteLine(w =>
+                //    {
+                //        w.Write("output.")
+                //        .Write(property.PropertyName)
+                //        .Write(" = global::System.Data.DataReaderExtensions.GetInt32(reader, ")
+                //        .AppendDoubleQuote("Id")
+                //        .Write(");");
+                //    });
+                //});
                 w.WriteLine(w =>
                 {
                     w.Write("if (item.ColumnName == ")
@@ -138,13 +138,14 @@ internal static class CodeBlockExtensions
                     {
                         w.Write("output.")
                         .Write(property.PropertyName)
-                        .Write("= global::System.Data.DataReaderExtensions.GetInt32(reader, ")
+                        .Write(" = global::System.Data.DataReaderExtensions.GetInt32(reader, ")
                         .AppendDoubleQuote("ID")
                         .Write(");");
                     });
                 });
+                return w;
             }
-            return w;
+            
         }
         w.WriteLine(w =>
         {
