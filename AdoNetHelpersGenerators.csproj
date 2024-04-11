@@ -9,7 +9,7 @@
 		<Description>Description</Description>
 		<Authors>musictopia</Authors>
 		<PackageProjectUrl>https://github.com/musictopia2/AdoNetHelpersGenerators</PackageProjectUrl>
-		<Version>1.0.4</Version>
+		<Version>1.0.5</Version>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 	</PropertyGroup>
 	<ItemGroup>

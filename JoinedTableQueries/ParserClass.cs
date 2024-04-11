@@ -4,7 +4,6 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
     public BasicList<ResultsModel> GetResults()
     {
         BasicList<ResultsModel> output = [];
-
         foreach (var item in list)
         {
             ResultsModel results = GetResult(item);
@@ -13,6 +12,7 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
                 output.Add(results);
             }
         }
+
         return output;
     }
     private ResultsModel GetResult(ClassDeclarationSyntax classDeclaration)
@@ -101,6 +101,10 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
         else
         {
             output.ColumnName = attributes.Single().ConstructorArguments.Single().Value!.ToString();
+        }
+        if (output.ColumnName.ToLower() == "id")
+        {
+            output.IsIDField = true;
         }
         rets = symbol.TryGetAttribute("ForeignKey", out attributes);
         if (rets)

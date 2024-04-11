@@ -50,12 +50,14 @@ internal static class CodeBlockExtensions
         w.WriteLine($"private static {result.FullName} ReadItem(System.Data.Common.DbDataReader reader, {generic.FullFunctionName} action, global::CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
             .WriteCodeBlock(w =>
             {
+                //w.WriteLine("bool hasForeignKey = true;");
                 w.WriteLine($"{result.FullName} temp{result.ClassName} = new();");
                 foreach (var item in generic.Tables)
                 {
                     w.WriteLine($"{item.FullName}? {item.ObjectVariableName} = new();")
                     .WriteLine($"bool {item.BoolVariableValue} = true;");
                 }
+
                 w.WriteLine("var list = System.Data.Common.DbDataReaderExtensions.GetColumnSchema(reader);")
                 .WriteLine("int instances = 0;")
                 .WriteLine("int index = 0;")
@@ -105,6 +107,7 @@ internal static class CodeBlockExtensions
                         w.WriteLine("index++;")
                         .WriteLine("continue;");
                     });
+
                     w.WriteLine("if (reader.IsDBNull(index) == false)")
                     .WriteCodeBlock(w =>
                     {
@@ -143,18 +146,21 @@ internal static class CodeBlockExtensions
                 var main = result.Properties.Single(x => x.IsIDField);
                 foreach (var item in generic.Tables)
                 {
-                    var p = item.Properties.FirstOrDefault(x => x.ForeignTableName == result.TableName);
+                    var p = item.Properties.FirstOrDefault(x => x.ForeignTableName.ToLower() == result.TableName.ToLower());
                     w.WriteLine($"if ({item.BoolVariableValue} == false)")
                     .WriteCodeBlock(w =>
                     {
                         w.WriteLine($"{item.ObjectVariableName} = null;");
-                    })
-                    .WriteLine("else")
-                    .WriteCodeBlock(w =>
-                    {
-
-                        w.WriteLine($"{item.ObjectVariableName}.{p.PropertyName} = temp{result.ClassName}.{main.PropertyName};");
                     });
+
+                    if (p is not null)
+                    {
+                        w.WriteLine("else")
+                        .WriteCodeBlock(w =>
+                        {
+                            w.WriteLine($"{item.ObjectVariableName}.{p.PropertyName} = temp{result.ClassName}.{main.PropertyName};");
+                        });
+                    }
                 }
                 w.WriteLine(w =>
                 {
@@ -196,7 +202,7 @@ internal static class CodeBlockExtensions
                     w.WriteLine("string dateUsed = reader.GetString(index);")
                     .WriteLine($"{variableName}.{property.PropertyName}  = DateOnly.Parse(dateUsed);");
                 })
-           .WriteLine("else)")
+           .WriteLine("else")
                .WriteCodeBlock(w =>
                {
                    w.WriteLine("string dateUsed = reader.GetDateTime(index);")
@@ -212,7 +218,7 @@ internal static class CodeBlockExtensions
                     w.WriteLine("string timeUsed = reader.GetString(index);")
                     .WriteLine($"{variableName}.{property.PropertyName}  = TimeOnly.Parse(timeUsed);");
                 })
-           .WriteLine("else)")
+           .WriteLine("else")
                .WriteCodeBlock(w =>
                {
                    w.WriteLine("string timeUsed = reader.GetDateTime(index);")
@@ -228,7 +234,7 @@ internal static class CodeBlockExtensions
                     w.WriteLine("string dateUsed = reader.GetString(index);")
                     .WriteLine($"{variableName}.{property.PropertyName} = DateTime.Parse(dateUsed);");
                 })
-           .WriteLine("else)")
+           .WriteLine("else")
                .WriteCodeBlock(w =>
                {
                    w.WriteLine($"{variableName}.{property.PropertyName} = reader.GetDateTime(index);");

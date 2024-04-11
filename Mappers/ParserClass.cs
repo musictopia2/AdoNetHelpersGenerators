@@ -70,6 +70,11 @@ public class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation c
             {
                 p.ColumnName = attributes.Single().ConstructorArguments.Single().Value!.ToString();
             }
+            if (p.ColumnName.ToLower() == "id")
+            {
+                p.IsIDField = true;
+                p.CommonForUpdating = false; //try this to fix the mapping problem for cases where another property was used but still maps over.
+            }
             rets = item.TryGetAttribute("ForeignKey", out attributes);
             if (rets == false)
             {
