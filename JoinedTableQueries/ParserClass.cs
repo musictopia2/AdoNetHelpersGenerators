@@ -54,6 +54,12 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
                 JoinedTableModel table = ss.GetStartingResults<JoinedTableModel>();
                 instances++;
                 table.Instances = instances.ToString();
+                table.TableName = table.ClassName;
+                bool rets = ss.TryGetAttribute("Table", out var attributes);
+                if (rets)
+                {
+                    table.TableName = attributes.Single().ConstructorArguments.Single().Value!.ToString();
+                }
                 table.Properties = GetProperties(ss);
                 generic.Tables.Add(table);
                 cats1.AddToString(table.FullName, ", ");

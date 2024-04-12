@@ -57,7 +57,6 @@ internal static class CodeBlockExtensions
                     w.WriteLine($"{item.FullName}? {item.ObjectVariableName} = new();")
                     .WriteLine($"bool {item.BoolVariableValue} = true;");
                 }
-
                 w.WriteLine("var list = System.Data.Common.DbDataReaderExtensions.GetColumnSchema(reader);")
                 .WriteLine("int instances = 0;")
                 .WriteLine("int index = 0;")
@@ -65,7 +64,7 @@ internal static class CodeBlockExtensions
                 .WriteCodeBlock(w =>
                 {
                     w.WriteLine("""
-                        if (item.ColumnName == "ID")
+                        if (item.BaseColumnName!.Equals("id", StringComparison.CurrentCultureIgnoreCase))
                         """)
                     .WriteCodeBlock(w =>
                     {
@@ -116,7 +115,7 @@ internal static class CodeBlockExtensions
                             if (item.IsIDField == false)
                             {
                                 w.WriteLine($"""
-                                    if (item.ColumnName == "{item.PropertyName}")
+                                    if (item.ColumnName == "{item.PropertyName}" && item.BaseTableName == "{result.TableName}")
                                     """)
                                .WriteCodeBlock(w =>
                                {
@@ -131,7 +130,7 @@ internal static class CodeBlockExtensions
                                 if (p.ForeignTableName == "" && p.IsIDField == false)
                                 {
                                     w.WriteLine($"""
-                                            if (item.ColumnName == "{p.PropertyName}")
+                                            if (item.ColumnName == "{p.PropertyName}" && item.BaseTableName == "{item.TableName}")
                                             """)
                                    .WriteCodeBlock(w =>
                                    {
@@ -205,7 +204,7 @@ internal static class CodeBlockExtensions
            .WriteLine("else")
                .WriteCodeBlock(w =>
                {
-                   w.WriteLine("string dateUsed = reader.GetDateTime(index);")
+                   w.WriteLine("DateTime dateUsed = reader.GetDateTime(index);")
                    .WriteLine($"{variableName}.{property.PropertyName} = new(dateUsed.Year, dateUsed.Month, dateUsed.Day);");
                });
             return w;
@@ -221,7 +220,7 @@ internal static class CodeBlockExtensions
            .WriteLine("else")
                .WriteCodeBlock(w =>
                {
-                   w.WriteLine("string timeUsed = reader.GetDateTime(index);")
+                   w.WriteLine("DateTime timeUsed = reader.GetDateTime(index);")
                    .WriteLine($"{variableName}.{property.PropertyName} = new(timeUsed.Hour, timeUsed.Minute, timeUsed.Second, timeUsed.Millisecond);");
                });
             return w;
