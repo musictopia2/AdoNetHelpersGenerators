@@ -42,15 +42,15 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
     private PropertyModel GetProperty(IPropertySymbol symbol)
     {
         PropertyModel output = symbol.GetStartingPropertyInformation<PropertyModel>();
-        bool rets = symbol.TryGetAttribute("Column", out var attributes);
-        if (rets == false)
-        {
-            output.ColumnName = output.PropertyName;
-        }
-        else
-        {
-            output.ColumnName = attributes.Single().ConstructorArguments.Single().Value!.ToString();
-        }
+        //bool rets = symbol.TryGetAttribute("Column", out var attributes);
+        //if (rets == false)
+        //{
+        //    output.ColumnName = output.PropertyName;
+        //}
+        //else
+        //{
+        //    output.ColumnName = attributes.Single().ConstructorArguments.Single().Value!.ToString();
+        //}
         return output;
     }
 }

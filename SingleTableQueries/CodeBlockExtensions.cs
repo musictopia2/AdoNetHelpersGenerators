@@ -105,52 +105,36 @@ internal static class CodeBlockExtensions
     }
     private static ICodeBlock WritePropertyBlock(this ICodeBlock w, PropertyModel property)
     {
-        if (property.VariableCustomCategory == EnumSimpleTypeCategory.Int && property.Nullable == false)
-        {
-            if (property.PropertyName == "ID" || property.ColumnName == "ID")
-            {
-                //w.WriteLine(w =>
-                //{
-                //    w.Write("if (item.ColumnName == ")
-                //    .AppendDoubleQuote("Id")
-                //    .Write(")");
-                //})
-                //.WriteCodeBlock(w =>
-                //{
-                //    w.WriteLine(w =>
-                //    {
-                //        w.Write("output.")
-                //        .Write(property.PropertyName)
-                //        .Write(" = global::System.Data.DataReaderExtensions.GetInt32(reader, ")
-                //        .AppendDoubleQuote("Id")
-                //        .Write(");");
-                //    });
-                //});
-                w.WriteLine(w =>
-                {
-                    w.Write("if (item.ColumnName == ")
-                    .AppendDoubleQuote("ID")
-                    .Write(")");
-                })
-                .WriteCodeBlock(w =>
-                {
-                    w.WriteLine(w =>
-                    {
-                        w.Write("output.")
-                        .Write(property.PropertyName)
-                        .Write(" = global::System.Data.DataReaderExtensions.GetInt32(reader, ")
-                        .AppendDoubleQuote("ID")
-                        .Write(");");
-                    });
-                });
-                return w;
-            }
+        //if (property.VariableCustomCategory == EnumSimpleTypeCategory.Int && property.Nullable == false)
+        //{
+        //    if (property.PropertyName == "ID" || property.ColumnName == "ID")
+        //    {
+                
+        //        w.WriteLine(w =>
+        //        {
+        //            w.Write("if (item.ColumnName == ")
+        //            .AppendDoubleQuote("ID")
+        //            .Write(")");
+        //        })
+        //        .WriteCodeBlock(w =>
+        //        {
+        //            w.WriteLine(w =>
+        //            {
+        //                w.Write("output.")
+        //                .Write(property.PropertyName)
+        //                .Write(" = global::System.Data.DataReaderExtensions.GetInt32(reader, ")
+        //                .AppendDoubleQuote("ID")
+        //                .Write(");");
+        //            });
+        //        });
+        //        return w;
+        //    }
             
-        }
+        //}
         w.WriteLine(w =>
         {
             w.Write("if (item.ColumnName == ")
-            .AppendDoubleQuote(property.ColumnName)
+            .AppendDoubleQuote(property.PropertyName)
             .Write(")");
         })
         .WriteCodeBlock(w =>
@@ -160,7 +144,7 @@ internal static class CodeBlockExtensions
                 w.WriteLine(w =>
                 {
                     w.Write("if (global::System.Data.DataReaderExtensions.IsDBNull(reader, ")
-                    .AppendDoubleQuote(property.ColumnName)
+                    .AppendDoubleQuote(property.PropertyName)
                     .Write(") == false)");
                 })
                 .WriteCodeBlock(w =>
@@ -182,7 +166,7 @@ internal static class CodeBlockExtensions
             w.WriteLine(w =>
             {
                 w.Write("int temp = global::System.Data.DataReaderExtensions.GetInt32(reader, ")
-                .AppendDoubleQuote(property.ColumnName)
+                .AppendDoubleQuote(property.PropertyName)
                 .Write(");");
             });
             if (property.VariableCustomCategory == EnumSimpleTypeCategory.StandardEnum)
@@ -221,7 +205,7 @@ internal static class CodeBlockExtensions
             .WriteCodeBlock(w =>
             {
                 w.WriteLine($"""
-                    string dateUsed = System.Data.DataReaderExtensions.GetString(reader, "{property.ColumnName}");
+                    string dateUsed = System.Data.DataReaderExtensions.GetString(reader, "{property.PropertyName}");
                     """)
                 .WriteLine($"output.{property.PropertyName} = DateOnly.Parse(dateUsed);");
             })
@@ -231,7 +215,7 @@ internal static class CodeBlockExtensions
                 w.WriteLine(w =>
                 {
                     w.Write("DateTime dateUsed = global::System.Data.DataReaderExtensions.GetDateTime(reader, ")
-                    .AppendDoubleQuote(property.ColumnName)
+                    .AppendDoubleQuote(property.PropertyName)
                     .Write(");");
                 }).WriteLine(w =>
                 {
@@ -248,7 +232,7 @@ internal static class CodeBlockExtensions
             .WriteCodeBlock(w =>
             {
                 w.WriteLine($"""
-                    string dateUsed = System.Data.DataReaderExtensions.GetString(reader, "{property.ColumnName}");
+                    string dateUsed = System.Data.DataReaderExtensions.GetString(reader, "{property.PropertyName}");
                     """)
                 .WriteLine($"output.{property.PropertyName} = DateTime.Parse(dateUsed);");
             })
@@ -256,7 +240,7 @@ internal static class CodeBlockExtensions
             .WriteCodeBlock(w =>
             {
                 w.WriteLine($"""
-                    output.{property.PropertyName} = System.Data.DataReaderExtensions.GetDateTime(reader, "{property.ColumnName}");
+                    output.{property.PropertyName} = System.Data.DataReaderExtensions.GetDateTime(reader, "{property.PropertyName}");
                     """);
             });
             return w;
@@ -267,7 +251,7 @@ internal static class CodeBlockExtensions
             .WriteCodeBlock(w =>
             {
                 w.WriteLine($"""
-                    string timeUsed = System.Data.DataReaderExtensions.GetString(reader, "{property.ColumnName}");
+                    string timeUsed = System.Data.DataReaderExtensions.GetString(reader, "{property.PropertyName}");
                     """)
                 .WriteLine($"output.{property.PropertyName} = TimeOnly.Parse(timeUsed);");
             })
@@ -277,7 +261,7 @@ internal static class CodeBlockExtensions
                 w.WriteLine(w =>
                 {
                     w.Write("DateTime timeUsed = global::System.Data.DataReaderExtensions.GetDateTime(reader, ")
-                    .AppendDoubleQuote(property.ColumnName)
+                    .AppendDoubleQuote(property.PropertyName)
                     .Write(");");
                 }).WriteLine(w =>
                 {
@@ -293,7 +277,7 @@ internal static class CodeBlockExtensions
             w.WriteLine(w =>
             {
                 w.Write("string temp = global::System.Data.DataReaderExtensions.GetString(reader, ")
-                .AppendDoubleQuote(property.ColumnName)
+                .AppendDoubleQuote(property.PropertyName)
                 .Write(");");
             })
             .WriteLine(w =>
@@ -312,7 +296,7 @@ internal static class CodeBlockExtensions
             .Write(" = global::System.Data.DataReaderExtensions.")
             .Write(method)
             .Write("(reader, ")
-            .AppendDoubleQuote(property.ColumnName)
+            .AppendDoubleQuote(property.PropertyName)
             .Write(");");
         });
         return w;

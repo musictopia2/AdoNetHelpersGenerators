@@ -6,5 +6,8 @@ internal record PropertyModel : ICustomProperty
     public string PropertyName { get; set; } = "";
     public string ContainingNameSpace { get; set; } = "";
     public string UnderlyingSymbolName { get; set; } = "";
-    public string ColumnName { get; set; } = ""; //the column name could be different
+    //may not even matter the columns since the mappers worry about that.
+
+
+    //public string ColumnName { get; set; } = ""; //the column name could be different
 }

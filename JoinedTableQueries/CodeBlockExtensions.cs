@@ -116,7 +116,7 @@ internal static class CodeBlockExtensions
                             if (item.IsIDField == false)
                             {
                                 w.WriteLine($"""
-                                    if (item.ColumnName == "{item.ColumnName}")
+                                    if (item.ColumnName == "{item.PropertyName}")
                                     """)
                                .WriteCodeBlock(w =>
                                {
@@ -131,7 +131,7 @@ internal static class CodeBlockExtensions
                                 if (p.ForeignTableName == "" && p.IsIDField == false)
                                 {
                                     w.WriteLine($"""
-                                            if (item.ColumnName == "{p.ColumnName}")
+                                            if (item.ColumnName == "{p.PropertyName}")
                                             """)
                                    .WriteCodeBlock(w =>
                                    {

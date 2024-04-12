@@ -94,17 +94,13 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
             output.IsIDField = true;
         }
         bool rets = symbol.TryGetAttribute("Column", out var attributes);
-        if (rets == false)
+        if (rets)
         {
-            output.ColumnName = output.PropertyName;
-        }
-        else
-        {
-            output.ColumnName = attributes.Single().ConstructorArguments.Single().Value!.ToString();
-        }
-        if (output.ColumnName.ToLower() == "id")
-        {
-            output.IsIDField = true;
+            string value = attributes.Single().ConstructorArguments.Single().Value!.ToString();
+            if (value.ToLower() == "id")
+            {
+                output.IsIDField = true;
+            }
         }
         rets = symbol.TryGetAttribute("ForeignKey", out attributes);
         if (rets)

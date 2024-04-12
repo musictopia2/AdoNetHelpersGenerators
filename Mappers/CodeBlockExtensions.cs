@@ -68,8 +68,9 @@ internal static class CodeBlockExtensions
         {
             if (p.ForeignKey != "")
             {
+                string lowerName = p.ForeignKey.ToLower();
                 w.WriteLine($"""
-                    if (name == "{p.ForeignKey}")
+                    if (name.ToLower() == "{lowerName}")
                     """)
                 .WriteCodeBlock(w =>
                 {
