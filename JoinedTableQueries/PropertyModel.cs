@@ -6,7 +6,7 @@ public record PropertyModel : ICustomProperty
     public string PropertyName { get; set; } = "";
     public string ContainingNameSpace { get; set; } = "";
     public string UnderlyingSymbolName { get; set; } = "";
-    //public string ColumnName { get; set; } = ""; //the column name could be different
     public bool IsIDField { get; set; }
     public string ForeignTableName { get; set; } = "";
+    public int Index { get; set; }
 }

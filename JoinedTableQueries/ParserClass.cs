@@ -1,6 +1,7 @@
 ﻿namespace AdoNetHelpersGenerators.JoinedTableQueries;
 internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation compilation)
 {
+    private int _index = 0;
     public BasicList<ResultsModel> GetResults()
     {
         BasicList<ResultsModel> output = [];
@@ -12,16 +13,16 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
                 output.Add(results);
             }
         }
-
         return output;
     }
     private ResultsModel GetResult(ClassDeclarationSyntax classDeclaration)
     {
+        _index = 0;
         ResultsModel output;
         INamedTypeSymbol symbol = compilation.GetClassSymbol(classDeclaration)!;
         output = symbol.GetStartingResults<ResultsModel>();
+        output.Properties = GetProperties(symbol, false);
         output.Joins = GetJoinedGenerics(symbol, output);
-        output.Properties = GetProperties(symbol);
         bool rets = symbol.TryGetAttribute("Table", out var attributes);
         if (rets == false)
         {
@@ -38,6 +39,7 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
         var firsts = GetJoinedTables(symbol);
         BasicList<JoinedGenericModel> output = [];
         JoinedGenericModel generic;
+
         foreach (var item in firsts)
         {
             generic = new();
@@ -54,13 +56,7 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
                 JoinedTableModel table = ss.GetStartingResults<JoinedTableModel>();
                 instances++;
                 table.Instances = instances.ToString();
-                table.TableName = table.ClassName;
-                bool rets = ss.TryGetAttribute("Table", out var attributes);
-                if (rets)
-                {
-                    table.TableName = attributes.Single().ConstructorArguments.Single().Value!.ToString();
-                }
-                table.Properties = GetProperties(ss);
+                table.Properties = GetProperties(ss, true);
                 generic.Tables.Add(table);
                 cats1.AddToString(table.FullName, ", ");
                 cats2.AddToString($"{table.FullName}?", ", ");
@@ -75,7 +71,7 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
         }
         return output;
     }
-    private BasicList<PropertyModel> GetProperties(INamedTypeSymbol symbol)
+    private BasicList<PropertyModel> GetProperties(INamedTypeSymbol symbol, bool needsJoined)
     {
         BasicList<PropertyModel> output = [];
         var firsts = symbol.GetAllPublicProperties();
@@ -84,14 +80,42 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
             if (item.HasAttribute("NotMapped") == false && item.IsReadOnly == false)
             {
                 PropertyModel property = GetProperty(item);
-                if (property.VariableCustomCategory != EnumSimpleTypeCategory.None)
+
+                if (CanAdd(item, property, needsJoined))
                 {
+                    property.Index = _index;
+                    _index++;
                     output.Add(property);
                 }
             }
         }
         return output;
     }
+    private bool CanAdd(IPropertySymbol symbol, PropertyModel property, bool needsJoined)
+    {
+        if (property.VariableCustomCategory == EnumSimpleTypeCategory.None)
+        {
+            return false;
+        }
+        if (needsJoined == false)
+        {
+            return true;
+        }
+        if (symbol.HasAttribute("PrimaryJoinedData"))
+        {
+            return true;
+        }
+        if (property.IsIDField)
+        {
+            return true;
+        }
+        //if (property.ForeignTableName != "")
+        //{
+        //    return true;
+        //}
+        return false;
+    }
+
     private PropertyModel GetProperty(IPropertySymbol symbol)
     {
         PropertyModel output = symbol.GetStartingPropertyInformation<PropertyModel>();

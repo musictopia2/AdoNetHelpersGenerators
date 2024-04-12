@@ -57,15 +57,43 @@ internal static class CodeBlockExtensions
                     w.WriteLine($"{item.FullName}? {item.ObjectVariableName} = new();")
                     .WriteLine($"bool {item.BoolVariableValue} = true;");
                 }
+
                 w.WriteLine("var list = System.Data.Common.DbDataReaderExtensions.GetColumnSchema(reader);")
                 .WriteLine("int instances = 0;")
                 .WriteLine("int index = 0;")
                 .WriteLine("foreach (var item in list)")
                 .WriteCodeBlock(w =>
                 {
-                    w.WriteLine("""
-                        if (item.BaseColumnName!.Equals("id", StringComparison.CurrentCultureIgnoreCase))
-                        """)
+                    //if (item.DataTypeName!.StartsWith("int", StringComparison.CurrentCultureIgnoreCase) && item.IsIdentity.HasValue && item.IsIdentity == true)
+                    //if (index == 1)
+                    StrCat cats = new();
+                    var p = result.Properties.SingleOrDefault(x => x.IsIDField); //must have id field.
+                    if (p is not null)
+                    {
+                        cats.AddToString($"index == {p.Index}", " || ");
+                    }
+                    foreach (var item in result.Joins)
+                    {
+                        foreach (var t in item.Tables)
+                        {
+                            foreach (var g in t.Properties)
+                            {
+                                if (g.IsIDField)
+                                {
+                                    cats.AddToString($"index == {g.Index}", " || ");
+                                }
+                            }
+                        }
+                    }
+                    w.WriteLine(w =>
+                    {
+                        w.Write("if (")
+                        .Write(cats.GetInfo())
+                        .Write(")");
+                    })
+                    //w.WriteLine("""
+                    //    if (item.DataTypeName!.StartsWith("int", StringComparison.CurrentCultureIgnoreCase) && item.IsIdentity.HasValue && item.IsIdentity == true)
+                    //    """)
                     .WriteCodeBlock(w =>
                     {
                         w.WriteLine("instances++;")
@@ -106,7 +134,6 @@ internal static class CodeBlockExtensions
                         w.WriteLine("index++;")
                         .WriteLine("continue;");
                     });
-
                     w.WriteLine("if (reader.IsDBNull(index) == false)")
                     .WriteCodeBlock(w =>
                     {
@@ -115,7 +142,7 @@ internal static class CodeBlockExtensions
                             if (item.IsIDField == false)
                             {
                                 w.WriteLine($"""
-                                    if (item.ColumnName == "{item.PropertyName}" && item.BaseTableName == "{result.TableName}")
+                                    if (index == {item.Index})
                                     """)
                                .WriteCodeBlock(w =>
                                {
@@ -130,7 +157,7 @@ internal static class CodeBlockExtensions
                                 if (p.ForeignTableName == "" && p.IsIDField == false)
                                 {
                                     w.WriteLine($"""
-                                            if (item.ColumnName == "{p.PropertyName}" && item.BaseTableName == "{item.TableName}")
+                                            if (index == {p.Index})
                                             """)
                                    .WriteCodeBlock(w =>
                                    {
