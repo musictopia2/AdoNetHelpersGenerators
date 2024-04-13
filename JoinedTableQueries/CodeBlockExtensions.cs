@@ -210,6 +210,9 @@ internal static class CodeBlockExtensions
                 .WriteCodeBlock(w =>
                 {
                     w.WriteLine("string dateUsed = reader.GetString(index);")
+                    .WriteLine("""
+                    dateUsed = dateUsed.Replace(" 00:00:00", "");
+                    """)
                     .WriteLine($"{variableName}.{property.PropertyName}  = DateOnly.Parse(dateUsed);");
                 })
            .WriteLine("else")

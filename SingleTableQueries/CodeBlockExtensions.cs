@@ -207,6 +207,9 @@ internal static class CodeBlockExtensions
                 w.WriteLine($"""
                     string dateUsed = System.Data.DataReaderExtensions.GetString(reader, "{property.PropertyName}");
                     """)
+                .WriteLine("""
+                    dateUsed = dateUsed.Replace(" 00:00:00", "");
+                    """)
                 .WriteLine($"output.{property.PropertyName} = DateOnly.Parse(dateUsed);");
             })
             .WriteLine("else")
