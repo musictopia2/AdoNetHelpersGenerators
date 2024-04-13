@@ -205,7 +205,7 @@ internal static class CodeBlockExtensions
            .WriteLine("else")
                .WriteCodeBlock(w =>
                {
-                   w.WriteLine("string dateUsed = reader.GetDateTime(index);")
+                   w.WriteLine("DateTime dateUsed = reader.GetDateTime(index);")
                    .WriteLine($"{variableName}.{property.PropertyName} = new(dateUsed.Year, dateUsed.Month, dateUsed.Day);");
                });
             return w;
@@ -221,7 +221,7 @@ internal static class CodeBlockExtensions
            .WriteLine("else")
                .WriteCodeBlock(w =>
                {
-                   w.WriteLine("string timeUsed = reader.GetDateTime(index);")
+                   w.WriteLine("DateTime timeUsed = reader.GetDateTime(index);")
                    .WriteLine($"{variableName}.{property.PropertyName} = new(timeUsed.Hour, timeUsed.Minute, timeUsed.Second, timeUsed.Millisecond);");
                });
             return w;
