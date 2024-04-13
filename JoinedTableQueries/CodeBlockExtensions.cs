@@ -50,64 +50,71 @@ internal static class CodeBlockExtensions
         w.WriteLine($"private static {result.FullName} ReadItem(System.Data.Common.DbDataReader reader, {generic.FullFunctionName} action, global::CommonBasicLibraries.DatabaseHelpers.MiscClasses.EnumDatabaseCategory category)")
             .WriteCodeBlock(w =>
             {
-                //w.WriteLine("bool hasForeignKey = true;");
                 w.WriteLine($"{result.FullName} temp{result.ClassName} = new();");
                 foreach (var item in generic.Tables)
                 {
                     w.WriteLine($"{item.FullName}? {item.ObjectVariableName} = new();")
                     .WriteLine($"bool {item.BoolVariableValue} = true;");
                 }
-
                 w.WriteLine("var list = System.Data.Common.DbDataReaderExtensions.GetColumnSchema(reader);")
                 .WriteLine("int instances = 0;")
-                .WriteLine("int index = 0;")
-                .WriteLine("foreach (var item in list)")
+                .WriteLine("int index = 0;");
+                w.WriteLine("foreach (var item in list)")
                 .WriteCodeBlock(w =>
                 {
-                    w.WriteLine("""
-                        if (item.ColumnName == "ID")
-                        """)
-                    .WriteCodeBlock(w =>
+                    var main = result.Properties.SingleOrDefault(x => x.IsIDField);
+                    foreach (var item in generic.Tables)
                     {
-                        w.WriteLine("instances++;")
-                        .WriteLine("int? results;")
-                        .WriteLine("if (reader.IsDBNull(index) == false)")
-                        .WriteCodeBlock(w =>
+                        var p = item.Properties.SingleOrDefault(x => x.IsIDField);
+                        
+                        if (p is not null && main is not null)
                         {
-                            w.WriteLine("results = reader.GetInt32(index);");
-                        })
-                        .WriteLine("else")
-                        .WriteCodeBlock(w =>
-                        {
-                            w.WriteLine("results = null;");
-                        });
-                        foreach (var item in generic.Tables)
-                        {
-                            w.WriteLine($"if (instances == {item.Instances} && results is null)")
-                            .WriteCodeBlock(w =>
-                            {
-                                w.WriteLine($"{item.BoolVariableValue} = false;");
+                            w.WriteLine($"""
+                                if (item.ColumnName.ToString().Equals("id", StringComparison.CurrentCultureIgnoreCase) || item.ColumnName.ToString().Equals("{main.PropertyName}", StringComparison.CurrentCultureIgnoreCase) || item.ColumnName.ToString().Equals("{p.PropertyName}", StringComparison.CurrentCultureIgnoreCase))
+                                """)
+                            
+                                .WriteCodeBlock(w =>
+                                {
+                                    w.WriteLine("instances++;")
+                                    .WriteLine("int? results;")
+                                    .WriteLine("if (reader.IsDBNull(index) == false)")
+                                    .WriteCodeBlock(w =>
+                                    {
+                                        w.WriteLine("results = reader.GetInt32(index);");
+                                    })
+                                    .WriteLine("else")
+                                    .WriteCodeBlock(w =>
+                                    {
+                                        w.WriteLine("results = null;");
+                                    });
+                                    foreach (var item in generic.Tables)
+                                    {
+                                        w.WriteLine($"if (instances == {item.Instances} && results is null)")
+                                        .WriteCodeBlock(w =>
+                                        {
+                                            w.WriteLine($"{item.BoolVariableValue} = false;");
+                                        });
+                                    }
+                                    var property = result.Properties.Single(x => x.IsIDField);
+                                    w.WriteLine("if (instances == 1)")
+                                    .WriteCodeBlock(w =>
+                                    {
+                                        w.WriteLine($"temp{result.ClassName}.{property.PropertyName} = results!.Value;");
+                                    });
+                                    foreach (var item in generic.Tables)
+                                    {
+                                        property = item.Properties.Single(x => x.IsIDField);
+                                        w.WriteLine($"else if (results is not null  && instances == {item.Instances})")
+                                        .WriteCodeBlock(w =>
+                                        {
+                                            w.WriteLine($"{item.ObjectVariableName}.{property.PropertyName} = results.Value;");
+                                        });
+                                    }
+                                    w.WriteLine("index++;")
+                                    .WriteLine("continue;");
                             });
                         }
-                        var property = result.Properties.Single(x => x.IsIDField);
-                        w.WriteLine("if (instances == 1)")
-                        .WriteCodeBlock(w =>
-                        {
-                            w.WriteLine($"temp{result.ClassName}.{property.PropertyName} = results!.Value;");
-                        });
-                        foreach (var item in generic.Tables)
-                        {
-                            property = item.Properties.Single(x => x.IsIDField);
-                            w.WriteLine($"else if (results is not null  && instances == {item.Instances})")
-                            .WriteCodeBlock(w =>
-                            {
-                                w.WriteLine($"{item.ObjectVariableName}.{property.PropertyName} = results.Value;");
-                            });
-                        }
-                        w.WriteLine("index++;")
-                        .WriteLine("continue;");
-                    });
-
+                    }
                     w.WriteLine("if (reader.IsDBNull(index) == false)")
                     .WriteCodeBlock(w =>
                     {
@@ -116,11 +123,13 @@ internal static class CodeBlockExtensions
                             if (item.IsIDField == false)
                             {
                                 w.WriteLine($"""
-                                    if (item.ColumnName == "{item.PropertyName}")
+                                    if (item.ColumnName == "{item.PropertyName}" && instances == 1)
                                     """)
                                .WriteCodeBlock(w =>
                                {
                                    w.PopulatePropertyInformation($"temp{result.ClassName}", item);
+                                   w.WriteLine("index++;")
+                                   .WriteLine("continue;");
                                });
                             }
                         }
@@ -131,11 +140,13 @@ internal static class CodeBlockExtensions
                                 if (p.ForeignTableName == "" && p.IsIDField == false)
                                 {
                                     w.WriteLine($"""
-                                            if (item.ColumnName == "{p.PropertyName}")
+                                            if (item.ColumnName == "{p.PropertyName}" && instances == {item.Instances})
                                             """)
                                    .WriteCodeBlock(w =>
                                    {
                                        w.PopulatePropertyInformation(item.ObjectVariableName, p);
+                                       w.WriteLine("index++;")
+                                       .WriteLine("continue;");
                                    });
                                 }
                             }
@@ -152,7 +163,6 @@ internal static class CodeBlockExtensions
                     {
                         w.WriteLine($"{item.ObjectVariableName} = null;");
                     });
-
                     if (p is not null)
                     {
                         w.WriteLine("else")

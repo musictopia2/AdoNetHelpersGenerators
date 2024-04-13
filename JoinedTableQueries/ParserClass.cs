@@ -45,6 +45,7 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
             StrCat cats1 = new();
             StrCat cats2 = new();
             string realName = $"global::{result.Namespace}.{result.ClassName}";
+            generic.ClassName = result.ClassName;
             cats1.AddToString(realName, ", ");
             cats2.AddToString(realName, ", ");
             int instances = 1;
