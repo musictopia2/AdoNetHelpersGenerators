@@ -8,5 +8,4 @@ public record PropertyModel : ICustomProperty
     public string UnderlyingSymbolName { get; set; } = "";
     public bool IsIDField { get; set; }
     public string ForeignTableName { get; set; } = "";
-    public int Index { get; set; }
 }

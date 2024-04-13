@@ -64,36 +64,9 @@ internal static class CodeBlockExtensions
                 .WriteLine("foreach (var item in list)")
                 .WriteCodeBlock(w =>
                 {
-                    //if (item.DataTypeName!.StartsWith("int", StringComparison.CurrentCultureIgnoreCase) && item.IsIdentity.HasValue && item.IsIdentity == true)
-                    //if (index == 1)
-                    StrCat cats = new();
-                    var p = result.Properties.SingleOrDefault(x => x.IsIDField); //must have id field.
-                    if (p is not null)
-                    {
-                        cats.AddToString($"index == {p.Index}", " || ");
-                    }
-                    foreach (var item in result.Joins)
-                    {
-                        foreach (var t in item.Tables)
-                        {
-                            foreach (var g in t.Properties)
-                            {
-                                if (g.IsIDField)
-                                {
-                                    cats.AddToString($"index == {g.Index}", " || ");
-                                }
-                            }
-                        }
-                    }
-                    w.WriteLine(w =>
-                    {
-                        w.Write("if (")
-                        .Write(cats.GetInfo())
-                        .Write(")");
-                    })
-                    //w.WriteLine("""
-                    //    if (item.DataTypeName!.StartsWith("int", StringComparison.CurrentCultureIgnoreCase) && item.IsIdentity.HasValue && item.IsIdentity == true)
-                    //    """)
+                    w.WriteLine("""
+                        if (item.ColumnName == "ID")
+                        """)
                     .WriteCodeBlock(w =>
                     {
                         w.WriteLine("instances++;")
@@ -134,6 +107,7 @@ internal static class CodeBlockExtensions
                         w.WriteLine("index++;")
                         .WriteLine("continue;");
                     });
+
                     w.WriteLine("if (reader.IsDBNull(index) == false)")
                     .WriteCodeBlock(w =>
                     {
@@ -142,7 +116,7 @@ internal static class CodeBlockExtensions
                             if (item.IsIDField == false)
                             {
                                 w.WriteLine($"""
-                                    if (index == {item.Index})
+                                    if (item.ColumnName == "{item.PropertyName}")
                                     """)
                                .WriteCodeBlock(w =>
                                {
@@ -157,7 +131,7 @@ internal static class CodeBlockExtensions
                                 if (p.ForeignTableName == "" && p.IsIDField == false)
                                 {
                                     w.WriteLine($"""
-                                            if (index == {p.Index})
+                                            if (item.ColumnName == "{p.PropertyName}")
                                             """)
                                    .WriteCodeBlock(w =>
                                    {
@@ -231,7 +205,7 @@ internal static class CodeBlockExtensions
            .WriteLine("else")
                .WriteCodeBlock(w =>
                {
-                   w.WriteLine("DateTime dateUsed = reader.GetDateTime(index);")
+                   w.WriteLine("string dateUsed = reader.GetDateTime(index);")
                    .WriteLine($"{variableName}.{property.PropertyName} = new(dateUsed.Year, dateUsed.Month, dateUsed.Day);");
                });
             return w;
@@ -247,7 +221,7 @@ internal static class CodeBlockExtensions
            .WriteLine("else")
                .WriteCodeBlock(w =>
                {
-                   w.WriteLine("DateTime timeUsed = reader.GetDateTime(index);")
+                   w.WriteLine("string timeUsed = reader.GetDateTime(index);")
                    .WriteLine($"{variableName}.{property.PropertyName} = new(timeUsed.Hour, timeUsed.Minute, timeUsed.Second, timeUsed.Millisecond);");
                });
             return w;
