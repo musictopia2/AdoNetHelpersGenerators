@@ -182,7 +182,7 @@ internal static class CodeBlockExtensions
         }
         else if (property.VariableCustomCategory == EnumSimpleTypeCategory.DateOnly)
         {
-            w.WriteLine("column.ColumnType = System.Data.DbType.DateTime2;"); //hopefully this work.
+            w.WriteLine("column.ColumnType = System.Data.DbType.Date;");
         }
         else if (property.VariableCustomCategory == EnumSimpleTypeCategory.DateTime)
         {
@@ -190,7 +190,7 @@ internal static class CodeBlockExtensions
         }
         else if (property.VariableCustomCategory == EnumSimpleTypeCategory.TimeOnly)
         {
-            w.WriteLine("column.ColumnType = System.Data.DbType.DateTime2;");
+            w.WriteLine("column.ColumnType = System.Data.DbType.Time;");
         }
         else if (property.VariableCustomCategory == EnumSimpleTypeCategory.Decimal)
         {
