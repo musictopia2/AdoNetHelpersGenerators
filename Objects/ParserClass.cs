@@ -1,4 +1,6 @@
-﻿namespace AdoNetHelpersGenerators.Objects;
+﻿using System.Diagnostics;
+
+namespace AdoNetHelpersGenerators.Objects;
 internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation compilation)
 {
     public BasicList<ResultsModel> GetResults()
@@ -28,9 +30,16 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
         var firsts = classSymbol.GetAllPublicProperties();
         foreach (var item in firsts)
         {
+//#if DEBUG
+//            if (Debugger.IsAttached == false)
+//            {
+//                Debugger.Launch();
+//            }
+//#endif
             if (item.HasAttribute("NotMapped") == false &&  item.IsReadOnly == false)
             {
                 PropertyModel property = GetProperty(item, result);
+                
                 if (property.VariableCustomCategory != EnumSimpleTypeCategory.None)
                 {
                     output.Add(property);
@@ -43,6 +52,10 @@ internal class ParserClass(IEnumerable<ClassDeclarationSyntax> list, Compilation
     {
         PropertyModel output = symbol.GetStartingPropertyInformation<PropertyModel>();
         output.PropertyName = "";
+        if (output.VariableCustomCategory == EnumSimpleTypeCategory.String)
+        {
+            output.Nullable = false; //try to force strings to be non-nullable for now.
+        }
         output.ScalarInfo = GetScalarMethod(output.VariableCustomCategory, output.Nullable);
         output.QueryMethod = GetQueryMethod(output.VariableCustomCategory, output.UnderlyingSymbolName, output.Nullable);
         output.ReturnType = GetReturnMethod(output.VariableCustomCategory, output.UnderlyingSymbolName, output.ContainingNameSpace, output.Nullable);
